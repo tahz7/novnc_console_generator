@@ -11,7 +11,7 @@ The novnc link generator is used to generate novnc console links for Rackspace C
 
 ### requirements:
 
-* tested to work with python 2.6/2.67
+* tested to work with python 2.6/2.7
 * Your mycloud.rackspace.com username. 
 * Your API key (this can be found in your control panel -> top right click your username -> account settings -> show api key). 
 * Your server id, click your server name in your control panel and the ID is listed in the details. 
