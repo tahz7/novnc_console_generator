@@ -25,7 +25,6 @@ def user_input():
     sys.stdin = open('/dev/tty')
 
     # sys args are; -u user -k key -s server
-
     if len(sys.argv) > 1:
         if sys.argv[1] == str('-u'):
             user = str(sys.argv[2])
