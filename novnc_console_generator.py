@@ -21,6 +21,7 @@ class txt_colors:
     UNDERLINE = '\033[4m'
     ENDC = '\033[0m'
 
+
 def user_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', help='Enter your http://mycloud.rackspace.com user', type=str, required=True)
@@ -32,6 +33,7 @@ def user_arg():
     server_id = args.s
 
     return user, key, server_id
+
 
 def user_input():
     sys.stdin = open('/dev/tty')
@@ -87,7 +89,6 @@ def get_token(user, key):
         default_region = result_loads['access']['user']['RAX-AUTH:defaultRegion']
 
     return token, ddi, default_region
-
 
 
 def generate_novnc_link(token, dc, ddi, server_id):
