@@ -21,7 +21,6 @@ class txt_colors:
     UNDERLINE = '\033[4m'
     ENDC = '\033[0m'
 
-
 def user_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', help='Enter your http://mycloud.rackspace.com user', type=str, required=True)
@@ -33,7 +32,6 @@ def user_arg():
     server_id = args.s
 
     return user, key, server_id
-
 
 def user_input():
     sys.stdin = open('/dev/tty')
@@ -91,6 +89,7 @@ def get_token(user, key):
     return token, ddi, default_region
 
 
+
 def generate_novnc_link(token, dc, ddi, server_id):
     headers = {
     'X-Auth-Token': token,
@@ -109,7 +108,7 @@ def generate_novnc_link(token, dc, ddi, server_id):
 
     if u'console' in result_loads:
         generate_novnc_link = result_loads[u'console'][u'url']
-    elif 'itemNotFound' in result_loads:
+    elif 'itemNotFound' in result_loads and 'lon' in dc:
         print txt_colors.LIGHTRED + result_loads['itemNotFound']['message'] + txt_colors.ENDC
         sys.exit()
     else:
@@ -126,10 +125,16 @@ def get_novnc_link():
         if novnc_link:
             return novnc_link
 
+    if not novnc_link:
+        print txt_colors.LIGHTRED + 'Instance {0} could not be found.'.format(server_id) + txt_colors.ENDC
+        sys.exit()
+
 
 def print_results():
     novnc_link = get_novnc_link()
-    print txt_colors.GREEN + novnc_link + txt_colors.ENDC
+
+    if novnc_link:
+        print txt_colors.GREEN + novnc_link + txt_colors.ENDC
 
 
 def main():
