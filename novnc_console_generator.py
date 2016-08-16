@@ -4,6 +4,7 @@ import requests
 import json
 import sys
 import re
+import argparse
 
 class txt_colors:
     BLUE = '\033[94m'
@@ -20,22 +21,33 @@ class txt_colors:
     UNDERLINE = '\033[4m'
     ENDC = '\033[0m'
 
+def user_arg():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-u', help='Enter your http://mycloud.rackspace.com user', type=str, required=True)
+    parser.add_argument('-k', help='Enter your api key', type=str, required=True)
+    parser.add_argument('-s', help='Enter your server ID', type=str, required=True)
+    args = parser.parse_args()
+    user = args.u
+    key = args.k
+    server_id = args.s
+
+    return user, key, server_id
 
 def user_input():
     sys.stdin = open('/dev/tty')
 
-    # sys args are; -u user -k key -s server
     if len(sys.argv) > 1:
-        if sys.argv[1] == str('-u'):
-            user = str(sys.argv[2])
-        if sys.argv[3] == str('-k'):
-            key = str(sys.argv[4])
-        if sys.argv[5] == str('-s'):
-            server_id = str(sys.argv[6])
+        user, key, server_id = user_arg()
     else:
-        user = str(raw_input(txt_colors.YELLOW + 'Please enter account username: ' + txt_colors.ENDC))
-        key = str(raw_input(txt_colors.YELLOW +'Please enter authentication key: '+ txt_colors.ENDC))
-        server_id = str(raw_input(txt_colors.YELLOW +'Please enter the server ID: '+ txt_colors.ENDC))
+        while True:
+            user = str(raw_input(txt_colors.YELLOW + 'Please enter account username: ' + txt_colors.ENDC))
+            key = str(raw_input(txt_colors.YELLOW +'Please enter authentication key: '+ txt_colors.ENDC))
+            server_id = str(raw_input(txt_colors.YELLOW +'Please enter the server ID: '+ txt_colors.ENDC))
+
+            if all([user, key, server_id]):
+                break
+            else:
+                print txt_colors.LIGHTRED + '\nPlease do not leave any fields blank \n' + txt_colors.ENDC
 
     token, ddi, default_region = get_token(user, key)
 
@@ -51,7 +63,7 @@ def get_token(user, key):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        }
+            }
 
     data = '{"auth": {"RAX-KSKEY:apiKeyCredentials": {"username":"%s", "apiKey":"%s"}}}' % (user, key)
 
@@ -63,9 +75,16 @@ def get_token(user, key):
     except:
         print ("Timed out to Rackspace API (auth_api)")
 
-    token = result_loads['access']['token'][ u'id']
-    ddi =  result_loads['access']['token'][u'tenant'][u'id']
-    default_region = result_loads['access']['user']['RAX-AUTH:defaultRegion']
+    if 'unauthorized' in result_loads:
+        print txt_colors.LIGHTRED + result_loads['unauthorized']['message'] + txt_colors.ENDC
+        sys.exit()
+    elif 'badRequest' in result_loads:
+        print txt_colors.LIGHTRED + result_loads['badRequest']['message'] + txt_colors.ENDC
+        sys.exit()
+    else:
+        token = result_loads['access']['token'][ u'id']
+        ddi =  result_loads['access']['token'][u'tenant'][u'id']
+        default_region = result_loads['access']['user']['RAX-AUTH:defaultRegion']
 
     return token, ddi, default_region
 
@@ -75,7 +94,7 @@ def generate_novnc_link(token, dc, ddi, server_id):
     headers = {
     'X-Auth-Token': token,
     'Content-type': 'application/json',
-    }
+        }
 
     data = '{"os-getVNCConsole": {"type":"novnc"}}'
 
@@ -89,6 +108,9 @@ def generate_novnc_link(token, dc, ddi, server_id):
 
     if u'console' in result_loads:
         generate_novnc_link = result_loads[u'console'][u'url']
+    elif 'itemNotFound' in result_loads:
+        print txt_colors.LIGHTRED + result_loads['itemNotFound']['message'] + txt_colors.ENDC
+        sys.exit()
     else:
         generate_novnc_link = None
 
