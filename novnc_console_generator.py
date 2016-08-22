@@ -6,6 +6,7 @@ import sys
 import re
 import argparse
 
+
 class txt_colors:
     BLUE = '\033[94m'
     RED = '\033[31m'
@@ -21,6 +22,7 @@ class txt_colors:
     UNDERLINE = '\033[4m'
     ENDC = '\033[0m'
 
+
 def user_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', help='Enter your http://mycloud.rackspace.com user', type=str, required=True)
@@ -32,6 +34,7 @@ def user_arg():
     server_id = args.s
 
     return user, key, server_id
+
 
 # get user input if there is no cmd args.
 def user_input():
@@ -117,6 +120,7 @@ def generate_novnc_link(token, dc, ddi, server_id):
         generate_novnc_link = None
 
     return generate_novnc_link
+
 
 # This iterates the datacentre api endpoints to find a match for the server in order to get the novnc link
 def get_novnc_link():
