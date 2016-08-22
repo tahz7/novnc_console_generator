@@ -33,6 +33,7 @@ def user_arg():
 
     return user, key, server_id
 
+# get user input if there is no cmd args.
 def user_input():
     sys.stdin = open('/dev/tty')
 
@@ -59,6 +60,7 @@ def user_input():
     return token, ddi, region_list, server_id
 
 
+# get authentication token for api
 def get_token(user, key):
     headers = {
         'Accept': 'application/json',
@@ -89,7 +91,7 @@ def get_token(user, key):
     return token, ddi, default_region
 
 
-
+# Get the novnc link for the server via api 
 def generate_novnc_link(token, dc, ddi, server_id):
     headers = {
     'X-Auth-Token': token,
@@ -116,7 +118,7 @@ def generate_novnc_link(token, dc, ddi, server_id):
 
     return generate_novnc_link
 
-
+# This iterates the datacentre api endpoints to find a match for the server in order to get the novnc link
 def get_novnc_link():
     token, ddi, region_list, server_id = user_input()
 
