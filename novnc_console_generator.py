@@ -77,7 +77,7 @@ def get_token(user, key):
         auth_api_post = requests.post(auth_api_url, timeout=15, verify=True, headers=headers, data=data)
         result_dump = json.dumps(auth_api_post.json())
         result_loads = json.loads(result_dump)
-    except:
+    except requests.exceptions.Timeout:
         print ("Timed out to Rackspace API (auth_api)")
 
     if 'unauthorized' in result_loads:
@@ -108,7 +108,7 @@ def generate_novnc_link(token, dc, ddi, server_id):
         novnc_api_post = requests.post(novnc_api_url, timeout=15, verify=True, headers=headers, data=data)
         result_dump = json.dumps(novnc_api_post.json())
         result_loads = json.loads(result_dump)
-    except:
+    except requests.exceptions.Timeout:
         print ("Timed out to Rackspace API (novnc_api)")
 
     if u'console' in result_loads:
